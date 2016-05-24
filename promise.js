@@ -14,6 +14,10 @@ function isPromise(p) {
     return p instanceof Promise;
 }
 
+function isThenable(obj) {
+    return obj && isFunction(obj.then);
+}
+
 function callLater(fn) {
     setTimeout(fn, 0);
 }
@@ -112,7 +116,12 @@ function resolve(promise, x) {
 
 Promise.resolve = function(value) {
     return new Promise(function(resolve, reject) {
-        resolve(value);
+        if (isThenable(value)) {
+            value.then(resolve, reject);
+        }
+        else {
+            resolve(value);
+        }
     });
 };
 
